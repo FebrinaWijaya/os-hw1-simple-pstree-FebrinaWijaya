@@ -62,6 +62,7 @@ static void getSibling(pid_t pid, int level, char** output)
     struct task_struct *task, *task1;
     char buffer[100];
     int len;
+    int count = 0;
     //int i;
     struct list_head *list;
 
@@ -80,6 +81,7 @@ static void getSibling(pid_t pid, int level, char** output)
         //printk(KERN_INFO "%s %d\n", task1->comm, task1->pid);
         //getSibling(task1->pid, level+1, output);
         if(task1->pid!=0) {
+            ++count;
             buffer[0] = '\0';
             // snprintf(buf_temp, 100, "%s", buffer);
             len = snprintf(buffer, 100, "%s(%d)\n", task1->comm, task1->pid);
@@ -89,6 +91,11 @@ static void getSibling(pid_t pid, int level, char** output)
 
             strcat(*output, buffer);
         }
+    }
+    if(count == 0) {
+        *output = krealloc(*output, sizeof(char)*2, GFP_USER);
+        (*output)[0] = '\n';
+        (*output)[1] = '\0';
     }
 }
 
