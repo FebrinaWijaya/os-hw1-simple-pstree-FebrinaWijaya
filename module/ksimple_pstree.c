@@ -69,21 +69,11 @@ static void getSibling(pid_t pid, int level, char** output)
     task = pid_task(pid_struct, PIDTYPE_PID);
     //printk(KERN_INFO "%s(%d)\n", task->comm, task->pid);
 
-    // for(i=1;i<level;i++)
-    // {
-    //     snprintf(buffer, i*4+1, "    %s",buffer);
-    // }
-    // buffer[0] = '\0';
-    // snprintf(buf_temp, 100, "%s", buffer);
-    len = snprintf(buffer, 100, "%s(%d)\n", task->comm, task->pid);
-    printk(KERN_INFO "%s", buffer);
+    // len = snprintf(buffer, 100, "%s(%d)\n", task->comm, task->pid);
+    // printk(KERN_INFO "%s", buffer);
+    // *output = krealloc(*output, sizeof(char)*((len+strlen(*output))+1), GFP_USER);
+    // strcat(*output, buffer);
 
-    *output = krealloc(*output, sizeof(char)*((len+strlen(*output))+1), GFP_USER);
-
-    strcat(*output, buffer);
-    //printk(KERN_INFO "%s", *output);
-
-    //task = current -> parent ->parent;
     list = kmalloc(sizeof(struct list_head), GFP_USER);
     list_for_each(list,&(task->sibling)) {
         task1=list_entry(list,struct task_struct,sibling);
