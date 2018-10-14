@@ -19,7 +19,7 @@ struct msghdr msg;
 
 int main(int argc, char *argv[])
 {
-
+    
     char* msg_to_send;
     if(argc > 1) {
         int length = strlen(argv[1]);
@@ -38,7 +38,6 @@ int main(int argc, char *argv[])
             msg_to_send = malloc(sizeof(char)*(1+strlen(temp)+1));
             argv[1][0] = argv[1][1];
             argv[1][1] = ' ';
-            msg_to_send[0] = '\0';
             strcat(msg_to_send,argv[1]);
             strcat(msg_to_send,temp);
         }
