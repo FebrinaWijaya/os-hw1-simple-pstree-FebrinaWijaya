@@ -3,10 +3,12 @@
 #include <linux/netlink.h>
 #include <linux/skbuff.h>
 #include <linux/pid.h>
+#include <linux/sched.h>
+#include "ksimple_pstree.h"
+
 #define NETLINK_USER 31
 
 struct sock *nl_sk = NULL;
-
 static void getChildren(pid_t pid, int level, char** output)
 {
     struct pid *pid_struct;

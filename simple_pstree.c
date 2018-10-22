@@ -5,7 +5,7 @@
 #include <ctype.h>
 #include <sys/socket.h>
 #include <unistd.h>
-
+#include "simple_pstree.h"
 #define NETLINK_USER 31
 
 #define MAX_PAYLOAD 4096 /* maximum payload size*/
