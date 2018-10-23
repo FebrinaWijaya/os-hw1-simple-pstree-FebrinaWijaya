@@ -20,6 +20,12 @@ static void getChildren(pid_t pid, int level, char** output)
 
     pid_struct = find_get_pid(pid);
     task = pid_task(pid_struct, PIDTYPE_PID);
+    if(task == NULL) {
+        *output = krealloc(*output, sizeof(char)*2, GFP_USER);
+        (*output)[0] = '\n';
+        (*output)[1] = '\0';
+        return;
+    }
     //printk(KERN_INFO "%s(%d)\n", task->comm, task->pid);
 
     buffer[0] = '\0';
@@ -70,6 +76,12 @@ static void getSibling(pid_t pid, int level, char** output)
 
     pid_struct = find_get_pid(pid);
     task = pid_task(pid_struct, PIDTYPE_PID);
+    if(task == NULL) {
+        *output = krealloc(*output, sizeof(char)*2, GFP_USER);
+        (*output)[0] = '\n';
+        (*output)[1] = '\0';
+        return;
+    }
     //printk(KERN_INFO "%s(%d)\n", task->comm, task->pid);
 
     // len = snprintf(buffer, 100, "%s(%d)\n", task->comm, task->pid);
@@ -112,6 +124,12 @@ static void getParent(pid_t pid, int *level, char** output)
 
     pid_struct = find_get_pid(pid);
     task = pid_task(pid_struct, PIDTYPE_PID);
+    if(task == NULL) {
+        *output = krealloc(*output, sizeof(char)*2, GFP_USER);
+        (*output)[0] = '\n';
+        (*output)[1] = '\0';
+        return;
+    }
     //printk(KERN_INFO "%s(%d)\n", task->comm, task->pid);
 
     if (task->parent->pid != 0) {
