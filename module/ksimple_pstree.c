@@ -7,6 +7,7 @@
 #include "ksimple_pstree.h"
 
 #define NETLINK_USER 31
+#define DEBUG 0
 
 struct sock *nl_sk = NULL;
 static void getChildren(pid_t pid, int level, char** output)
@@ -108,6 +109,7 @@ static void getParent(pid_t pid, int *level, char** output)
         //printk(KERN_INFO "%s %d\n", task->parent->comm, task->parent->pid);
     }
 
+    buffer[0] = '\0';
     for(i=1; i<*level; i++) {
         snprintf(buf_temp, 100, "%s", buffer);
         snprintf(buffer, i*4+1, "    %s",buf_temp);
@@ -137,11 +139,12 @@ static void nl_recv_msg(struct sk_buff *skb)
     char *output;
     int init_lvl = 1;
     //end of declaration written by me
-
-    printk(KERN_INFO "Entering: %s\n", __FUNCTION__);
+    if(DEBUG)
+        printk(KERN_INFO "Entering: %s\n", __FUNCTION__);
 
     nlh = (struct nlmsghdr *)skb->data;
-    printk(KERN_INFO "Netlink received msg payload:%s\n", (char *)nlmsg_data(nlh));
+    if(DEBUG)
+        printk(KERN_INFO "Netlink received msg payload:%s\n", (char *)nlmsg_data(nlh));
     pid_sending = nlh->nlmsg_pid; /*pid of sending process */
 
     //start of code written by me
@@ -186,7 +189,8 @@ static int __init hello_init(void)
     struct netlink_kernel_cfg cfg = {
         .input = nl_recv_msg,
     };
-    printk("Entering: %s\n", __FUNCTION__);
+    if(DEBUG)
+        printk("Entering: %s\n", __FUNCTION__);
     nl_sk = netlink_kernel_create(&init_net, NETLINK_USER, &cfg);
     if (!nl_sk) {
         printk(KERN_ALERT "Error creating socket.\n");
@@ -198,8 +202,8 @@ static int __init hello_init(void)
 
 static void __exit hello_exit(void)
 {
-
-    printk(KERN_INFO "exiting hello module\n");
+    if(DEBUG)
+        printk(KERN_INFO "exiting hello module\n");
     netlink_kernel_release(nl_sk);
 }
 
