@@ -26,40 +26,22 @@ static void getChildren(pid_t pid, int level, char** output)
         (*output)[1] = '\0';
         return;
     }
-    //printk(KERN_INFO "%s(%d)\n", task->comm, task->pid);
 
     buffer[0] = '\0';
     for(i=1; i<level; i++) {
         snprintf(buf_temp, 100, "%s", buffer);
         snprintf(buffer, i*4+1, "    %s",buf_temp);
     }
-    //++level;
     snprintf(buf_temp, 100, "%s", buffer);
     len = snprintf(buffer, 100, "%s%s(%d)\n", buf_temp, task->comm, task->pid);
     printk(KERN_INFO "%s", buffer);
-    // *output = kmalloc(sizeof(char)*len+1, GFP_USER);
-    // *output[0] = '\0';
 
     *output = krealloc(*output, sizeof(char)*((len+strlen(*output))+1), GFP_USER);
-    //*output[0] = '\0';
     strcat(*output, buffer);
-    //printk(KERN_INFO "%s", *output);
 
-    //task = current -> parent ->parent;
     list = kmalloc(sizeof(struct list_head), GFP_USER);
     list_for_each(list,&(task->children)) {
         task1=list_entry(list,struct task_struct,sibling);
-        //printk(KERN_INFO "%s %d\n", task1->comm, task1->pid);
-
-        // buffer[0] = '\0';
-        // for(i=1;i<level;i++)
-        // {
-        //     snprintf(buffer, i*4+1, "    %s",buffer);
-        // }
-        // len = snprintf(buffer, 100, "%s%s(%d)\n", buffer, task1->comm, task1->pid);
-        // printk(KERN_INFO "%s", buffer);
-        // *output = krealloc(*output, sizeof(char)*((len+strlen(*output))+1), GFP_USER);
-        // strcat(*output, buffer);
         getChildren(task1->pid, level+1, output);
     }
 }
@@ -71,7 +53,6 @@ static void getSibling(pid_t pid, int level, char** output)
     char buffer[100];
     int len;
     int count = 0;
-    //int i;
     struct list_head *list;
 
     pid_struct = find_get_pid(pid);
@@ -82,22 +63,13 @@ static void getSibling(pid_t pid, int level, char** output)
         (*output)[1] = '\0';
         return;
     }
-    //printk(KERN_INFO "%s(%d)\n", task->comm, task->pid);
-
-    // len = snprintf(buffer, 100, "%s(%d)\n", task->comm, task->pid);
-    // printk(KERN_INFO "%s", buffer);
-    // *output = krealloc(*output, sizeof(char)*((len+strlen(*output))+1), GFP_USER);
-    // strcat(*output, buffer);
 
     list = kmalloc(sizeof(struct list_head), GFP_USER);
     list_for_each(list,&(task->sibling)) {
         task1=list_entry(list,struct task_struct,sibling);
-        //printk(KERN_INFO "%s %d\n", task1->comm, task1->pid);
-        //getSibling(task1->pid, level+1, output);
         if(task1->pid!=0) {
             ++count;
             buffer[0] = '\0';
-            // snprintf(buf_temp, 100, "%s", buffer);
             len = snprintf(buffer, 100, "%s(%d)\n", task1->comm, task1->pid);
             printk(KERN_INFO "%s", buffer);
 
@@ -120,7 +92,6 @@ static void getParent(pid_t pid, int *level, char** output)
     char buffer[100], buf_temp[100];
     int len;
     int i;
-    //struct list_head *list;
 
     pid_struct = find_get_pid(pid);
     task = pid_task(pid_struct, PIDTYPE_PID);
@@ -130,7 +101,6 @@ static void getParent(pid_t pid, int *level, char** output)
         (*output)[1] = '\0';
         return;
     }
-    //printk(KERN_INFO "%s(%d)\n", task->comm, task->pid);
 
     if (task->parent->pid != 0) {
         printk(KERN_INFO "has parent\n");
@@ -146,14 +116,8 @@ static void getParent(pid_t pid, int *level, char** output)
     snprintf(buf_temp, 100, "%s", buffer);
     len = snprintf(buffer, 100, "%s%s(%d)\n", buf_temp, task->comm, task->pid);
     printk(KERN_INFO "%s", buffer);
-    //if(task->parent->pid != 0)
-    //printk(KERN_INFO "%s %d\n", task->parent->comm, task->parent->pid);
-    // *output = kmalloc(sizeof(char)*len+1, GFP_USER);
-    // *output[0] = '\0';
     *output = krealloc(*output, sizeof(char)*((len+strlen(*output))+1), GFP_USER);
-    //*output[0] = '\0';
     strcat(*output, buffer);
-    //printk(KERN_INFO "%s", *output);
 }
 
 static void nl_recv_msg(struct sk_buff *skb)
@@ -163,7 +127,6 @@ static void nl_recv_msg(struct sk_buff *skb)
     int pid_sending;
     struct sk_buff *skb_out;
     int msg_size;
-    //char *msg = "Hello from kernel";
     int res;
     //start of declaration written by me
     char *msg_rcvd;
@@ -176,7 +139,6 @@ static void nl_recv_msg(struct sk_buff *skb)
     //end of declaration written by me
 
     printk(KERN_INFO "Entering: %s\n", __FUNCTION__);
-    //msg_size = strlen(msg);
 
     nlh = (struct nlmsghdr *)skb->data;
     printk(KERN_INFO "Netlink received msg payload:%s\n", (char *)nlmsg_data(nlh));
