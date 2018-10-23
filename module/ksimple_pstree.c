@@ -103,9 +103,9 @@ static void getParent(pid_t pid, int *level, char** output)
     }
 
     if (task->parent->pid != 0) {
-        printk(KERN_INFO "has parent\n");
+        //printk(KERN_INFO "has parent\n");
         getParent(task->parent->pid, level, output);
-        printk(KERN_INFO "%s %d\n", task->parent->comm, task->parent->pid);
+        //printk(KERN_INFO "%s %d\n", task->parent->comm, task->parent->pid);
     }
 
     for(i=1; i<*level; i++) {
