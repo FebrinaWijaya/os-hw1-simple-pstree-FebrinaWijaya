@@ -45,6 +45,11 @@ static void getChildren(pid_t pid, int level, char** output)
         task1=list_entry(list,struct task_struct,sibling);
         getChildren(task1->pid, level+1, output);
     }
+
+    // list_for_each(list,&(task->thread_group)) {
+    //     task1=list_entry(list,struct task_struct,sibling);
+    //     getChildren(task1->pid, level+1, output);
+    // }
 }
 
 static void getSibling(pid_t pid, int level, char** output)
@@ -58,6 +63,7 @@ static void getSibling(pid_t pid, int level, char** output)
 
     pid_struct = find_get_pid(pid);
     task = pid_task(pid_struct, PIDTYPE_PID);
+
     if(task == NULL) {
         *output = krealloc(*output, sizeof(char)*2, GFP_USER);
         (*output)[0] = '\n';
@@ -65,10 +71,12 @@ static void getSibling(pid_t pid, int level, char** output)
         return;
     }
 
+    task = task -> parent;
+
     list = kmalloc(sizeof(struct list_head), GFP_USER);
-    list_for_each(list,&(task->sibling)) {
+    list_for_each(list,&(task->children)) {
         task1=list_entry(list,struct task_struct,sibling);
-        if(task1->pid!=0) {
+        if(task1->pid!=0 && task1->pid!=pid) {
             ++count;
             buffer[0] = '\0';
             len = snprintf(buffer, 100, "%s(%d)\n", task1->comm, task1->pid);
